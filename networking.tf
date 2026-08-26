@@ -107,32 +107,54 @@ resource "aws_nat_gateway" "nat_2" {
 
 
 resource "aws_route_table" "MRT" {
-    vpc_id = aws_vpc.main.id
-    route = {
-        cidr_block = "0.0.0.0/0"
-        gateway_id= aws_internet_gateway.gw.id
-    }
-    
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "main-route-table"
+  }
 }
 
+resource "aws_route" "public_internet_access" {
+  route_table_id         = aws_route_table.MRT.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.gw.id
+}
+
+
 resource "aws_route_table" "CRT_1" {
-    vpc_id = aws_vpc.main.id
-    route = {
-        cidr_block = "0.0.0.0/0"
-        gateway_id= aws_nat_gateway.nat_1.id
-    }
-  
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "private-route-table-1"
+  }
+}
+
+resource "aws_route" "private_nat_1" {
+  route_table_id         = aws_route_table.CRT_1.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat_1.id
 }
 
 resource "aws_route_table" "CRT_2" {
-    vpc_id = aws_vpc.main.id
-    route = {
-        cidr_block = "0.0.0.0/0"
-        gateway_id= aws_nat_gateway.nat_2.id
-    }
-  
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "private-route-table-1"
+  }
 }
 
+resource "aws_route" "private_nat_2" {
+  route_table_id         = aws_route_table.CRT_2.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat_2.id
+}
+
+
+resource "aws_route_table_association" "pub_1" {
+    subnet_id = aws_subnet.public_1.id
+    route_table_id = aws_route_table.MRT.id
+
+}
 
 resource "aws_route_table_association" "pub_1" {
     subnet_id = aws_subnet.public_1.id
