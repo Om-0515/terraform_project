@@ -139,7 +139,7 @@ resource "aws_route_table" "CRT_2" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "private-route-table-1"
+    Name = "private-route-table-2"
   }
 }
 
@@ -156,11 +156,6 @@ resource "aws_route_table_association" "pub_1" {
 
 }
 
-resource "aws_route_table_association" "pub_1" {
-    subnet_id = aws_subnet.public_1.id
-    route_table_id = aws_route_table.MRT.id
-
-}
 
 
 resource "aws_route_table_association" "pub_2" {
